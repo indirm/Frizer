@@ -158,17 +158,17 @@ def set_hours():
     db.session.commit()
     return redirect("/dashboard")
 
-    @app.route("/cenik")
-    def cenik():
-        return render_template("cenik.html")
+@app.route("/cenik")
+def cenik():
+    return render_template("cenik.html")
 
-    @app.route("/galerija")
-    def galerija():
-        return render_template("galerija.html")
+@app.route("/galerija")
+def galerija():
+    return render_template("galerija.html")
 
-    @app.route("/o_nama")
-    def o_nama():
-        return render_template("o_nama.html")
+@app.route("/o_nama")
+def o_nama():
+    return render_template("o_nama.html")
 
 # --- Initialize DB ---
 with app.app_context():
