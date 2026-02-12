@@ -230,7 +230,8 @@ def cenik():
 
 @app.route("/galerija")
 def galerija():
-    return render_template("galerija.html")
+    gallery = Gallery.query.all()
+    return render_template("galerija.html", gallery=gallery)
 
 @app.route("/o_nama")
 def o_nama():

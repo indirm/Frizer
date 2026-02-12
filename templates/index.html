@@ -2,22 +2,47 @@
 {% block title %}Domov{% endblock %}
 
 {% block content %}
-<section class="text-center">
-    <h1 class="text-4xl font-bold mb-4">Dobrodošli v našem Frizerskem Studiu!</h1>
-    <p class="mb-6 text-lg">Profesionalne storitve, prijazno osebje in vrhunski rezultati.</p>
-    <a href="#book" class="bg-yellow-500 text-gray-900 px-6 py-3 rounded hover:bg-yellow-400 transition">Rezervirajte termin</a>
+
+<!-- Hero / Welcome Section -->
+<section class="text-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-yellow-200 to-yellow-400 rounded-lg shadow-md">
+    <h1 class="text-4xl sm:text-5xl font-bold mb-4">Dobrodošli v našem Frizerskem Studiu!</h1>
+    <p class="mb-6 text-lg sm:text-xl max-w-2xl mx-auto">Profesionalne storitve, prijazno osebje in vrhunski rezultati. Vaše zadovoljstvo nam je najpomembnejše.</p>
+    <a href="#book" class="inline-block bg-gray-900 text-white px-6 py-3 rounded hover:bg-gray-800 transition">Rezervirajte termin</a>
 </section>
 
+<!-- Booking Form -->
 <section id="book" class="mt-12 bg-gray-100 p-6 rounded shadow-md max-w-xl mx-auto">
-    <h2 class="text-2xl font-bold mb-4">Rezervacija termina</h2>
+    <h2 class="text-2xl font-bold mb-4 text-center">Rezervacija termina</h2>
     <form id="bookingForm" class="space-y-4">
-        <input type="text" id="name" placeholder="Vaše ime" class="w-full p-2 border rounded" required>
-        <input type="text" id="phone" placeholder="Telefon" class="w-full p-2 border rounded" required>
-        <input type="date" id="date" class="w-full p-2 border rounded" required>
-        <input type="time" id="time" class="w-full p-2 border rounded" required>
-        <button type="button" onclick="book()" class="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800">Rezerviraj</button>
-        <p id="message" class="text-green-600 font-semibold mt-2"></p>
+        <input type="text" id="name" placeholder="Vaše ime" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+        <input type="text" id="phone" placeholder="Telefon" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+        <input type="date" id="date" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+        <input type="time" id="time" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+        <button type="button" onclick="book()" class="w-full bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition">Rezerviraj</button>
+        <p id="message" class="text-green-600 font-semibold mt-2 text-center"></p>
     </form>
+</section>
+
+<!-- About / Info Section -->
+<section class="mt-12 px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl font-bold mb-4">Zakaj izbrati nas?</h2>
+    <p class="max-w-2xl mx-auto text-gray-700 text-lg mb-6">
+        Nudimo široko paleto frizerskih storitev, od klasičnega striženja do modernih stilov in oblikovanja las. Naša ekipa uporablja le kakovostne izdelke in se trudi za vrhunsko izkušnjo.
+    </p>
+</section>
+
+<!-- Gallery Preview -->
+<section class="mt-12 px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold mb-6 text-center">Galerija</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {% for image in gallery %}
+        <div class="bg-white rounded shadow overflow-hidden">
+            <img src="{{ url_for('static', filename=image.before_image) }}" alt="{{ image.title }} - pred" class="w-full h-48 object-cover">
+            <img src="{{ url_for('static', filename=image.after_image) }}" alt="{{ image.title }} - po" class="w-full h-48 object-cover mt-2">
+            <div class="p-2 text-center font-semibold">{{ image.title }}</div>
+        </div>
+        {% endfor %}
+    </div>
 </section>
 
 <script>
@@ -34,13 +59,15 @@ function book() {
     })
     .then(res => res.json().then(data => ({status: res.status, body: data})))
     .then(obj => {
-        document.getElementById("message").innerText = obj.body.message;
-        document.getElementById("message").className = obj.status === 200 ? "text-green-600" : "text-red-600";
+        const msg = document.getElementById("message");
+        msg.innerText = obj.body.message;
+        msg.className = obj.status === 200 ? "text-green-600 font-semibold mt-2 text-center" : "text-red-600 font-semibold mt-2 text-center";
     })
     .catch(err => {
         console.error(err);
-        document.getElementById("message").innerText = "Napaka, poskusite znova.";
-        document.getElementById("message").className = "text-red-600";
+        const msg = document.getElementById("message");
+        msg.innerText = "Napaka, poskusite znova.";
+        msg.className = "text-red-600 font-semibold mt-2 text-center";
     });
 }
 </script>
