@@ -22,6 +22,7 @@ class Appointment(db.Model):
     date = db.Column(db.String(20))
     time = db.Column(db.String(10))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    approved = db.Column(db.Boolean, default=False)
 
 @app.route("/LeHa", methods=["GET", "POST"])
 def login():
@@ -101,7 +102,7 @@ def approve(id):
 
 with app.app_context():
     db.create_all()
-approved = db.Column(db.Boolean, default=False)
+
 if __name__ == "__main__":
     app.run(debug=True)
 
