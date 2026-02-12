@@ -60,7 +60,7 @@ def book():
     WORK_START = 14
     WORK_END = 20
     if hour < WORK_START or hour >= WORK_END:
-        return jsonify({"message": "Outside working hours"}), 400
+        return jsonify({"message": f"Outside working hours ({WORK_START}:00-{WORK_END}:00)"}), 400
 
     # 2️⃣ Check if time slot is already taken
     existing = Appointment.query.filter_by(
