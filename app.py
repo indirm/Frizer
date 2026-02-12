@@ -136,11 +136,14 @@ def dashboard():
     gallery = Gallery.query.all()
     work_hours = WorkHours.query.first() or WorkHours()
 
-    return render_template("admin_dashboard.html",
-                           appointments=appointments,
-                           services=services,
-                           gallery=gallery,
-                           work_hours=work_hours)
+    return render_template(
+        "admin_dashboard.html",
+        appointments=appointments,
+        services=services,
+        gallery=gallery,
+        work_hours=work_hours
+    )
+
 
 # --- Logout ---
 @app.route("/logout")
