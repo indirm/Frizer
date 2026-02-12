@@ -1,31 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Admin Dashboard</title>
 </head>
 <body>
+<h1>Admin Dashboard</h1>
+<a href="/logout">Logout</a>
 
-<h1>Booked Appointments</h1>
-
-<table>
-<tr>
-    <th>Name</th>
-    <th>Phone</th>
-    <th>Date</th>
-    <th>Time</th>
-</tr>
-
-{% for a in appointments %}
-<tr>
-    <td>{{ a.name }}</td>
-    <td>{{ a.phone }}</td>
-    <td>{{ a.date }}</td>
-    <td>{{ a.time }}</td>
-</tr>
-{% endfor %}
-
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    {% for appt in appointments %}
+    <tr>
+        <td>{{ appt.name }}</td>
+        <td>{{ appt.phone }}</td>
+        <td>{{ appt.date }}</td>
+        <td>{{ appt.time }}</td>
+        <td>{{ "Approved" if appt.approved else "Pending" }}</td>
+        <td>
+            {% if not appt.approved %}
+                <a href="/approve/{{ appt.id }}">Approve</a> |
+                <a href="/reject/{{ appt.id }}">Reject</a>
+            {% else %}
+                -
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
 </table>
+<h2>Set Working Hours</h2>
+<form method="POST" action="/set_hours">
+    Start: <input type="number" name="start" value="{{ work_hours.start_hour }}" min="0" max="23">
+    End: <input type="number" name="end" value="{{ work_hours.end_hour }}" min="1" max="24">
+    <button type="submit">Update</button>
+</form>
 
 </body>
 </html>
