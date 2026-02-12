@@ -53,38 +53,43 @@ def logout():
 
 @app.route("/book", methods=["POST"])
 def book():
-    data = request.json
+    try:
+        data = request.json
 
-    # 1️⃣ Check working hours
-    hour = int(data["time"].split(":")[0])
-    WORK_START = 14
-    WORK_END = 20
-    if hour < WORK_START or hour >= WORK_END:
-        return jsonify({"message": f"Outside working hours ({WORK_START}:00-{WORK_END}:00)"}), 400
+        WORK_START = 8
+        WORK_END = 18
+        hour = int(data["time"].split(":")[0])
 
-    # 2️⃣ Check if time slot is already taken
-    existing = Appointment.query.filter_by(
-        date=data["date"],
-        time=data["time"],
-        approved=True   # only approved appointments block the slot
-    ).first()
+        if hour < WORK_START or hour >= WORK_END:
+            return jsonify({"message": f"Outside working hours ({WORK_START}:00-{WORK_END}:00)"}), 400
 
-    if existing:
-        return jsonify({"message": "Time already taken"}), 400
+        # Check double booking
+        existing = Appointment.query.filter_by(
+            date=data["date"],
+            time=data["time"],
+            approved=True
+        ).first()
+        if existing:
+            return jsonify({"message": "Time already taken"}), 400
 
-    # 3️⃣ Create appointment (pending approval)
-    new_appointment = Appointment(
-        name=data["name"],
-        phone=data["phone"],
-        date=data["date"],
-        time=data["time"],
-        approved=False
-    )
+        # Create pending appointment
+        new_appointment = Appointment(
+            name=data["name"],
+            phone=data["phone"],
+            date=data["date"],
+            time=data["time"],
+            approved=False
+        )
 
-    db.session.add(new_appointment)
-    db.session.commit()
+        db.session.add(new_appointment)
+        db.session.commit()
 
-    return jsonify({"message": "Appointment request sent. Awaiting admin approval!"})
+        return jsonify({"message": "Appointment request sent! Awaiting admin approval."}), 200
+
+    except Exception as e:
+        print("Booking error:", e)
+        return jsonify({"message": "Server error, try again."}), 500
+
 
 @app.route("/approve/<int:id>")
 def approve(id):
