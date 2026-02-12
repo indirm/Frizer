@@ -4,6 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_mail import Mail, Message
 import os
+from flask import Flask, render_template, request, redirect, session, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -40,6 +44,45 @@ class WorkHours(db.Model):
     start_hour = db.Column(db.Integer, default=8)  # 8 AM
     end_hour = db.Column(db.Integer, default=18)   # 6 PM
 
+class Gallery(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))      # e.g., "Haircut John"
+    description = db.Column(db.String(200)) # optional
+    before_image = db.Column(db.String(200)) # path to static/images/before.jpg
+    after_image = db.Column(db.String(200))  # path to static/images/after.jpg
+
+class Service(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    price = db.Column(db.Float)
+
+@app.route("/admin/services", methods=["GET", "POST"])
+def manage_services():
+    if not session.get("admin"):
+        return redirect("/LeHa")
+    
+    if request.method == "POST":
+        name = request.form["name"]
+        price = float(request.form["price"])
+        service = Service(name=name, price=price)
+        db.session.add(service)
+        db.session.commit()
+        return redirect("/admin/services")
+    
+    services = Service.query.all()
+    return render_template("admin_services.html", services=services)
+
+@app.route("/admin/service/delete/<int:id>")
+def delete_service(id):
+    if not session.get("admin"):
+        return redirect("/LeHa")
+    
+    service = Service.query.get(id)
+    if service:
+        db.session.delete(service)
+        db.session.commit()
+    return redirect("/admin/services")
+
 # --- Admin login ---
 @app.route("/LeHa", methods=["GET", "POST"])
 def login():
@@ -55,16 +98,49 @@ def login():
 def index():
     return render_template("index.html")
 
-# --- Admin dashboard ---
-@app.route("/dashboard")
-def admin():
+@app.route("/admin/gallery", methods=["GET", "POST"])
+def manage_gallery():
     if not session.get("admin"):
         return redirect("/LeHa")
     
-    appointments = Appointment.query.order_by(Appointment.date, Appointment.time).all()
-    work_hours = WorkHours.query.first() or WorkHours()
+    if request.method == "POST":
+        # handle file upload
+        title = request.form["title"]
+        description = request.form["description"]
+        before = request.files["before"]
+        after = request.files["after"]
+        
+        # save files to static/images/
+        before_path = "images/" + before.filename
+        after_path = "images/" + after.filename
+        before.save(os.path.join("static", before_path))
+        after.save(os.path.join("static", after_path))
+        
+        entry = Gallery(title=title, description=description,
+                        before_image=before_path, after_image=after_path)
+        db.session.add(entry)
+        db.session.commit()
+        return redirect("/admin/gallery")
     
-    return render_template("admin.html", appointments=appointments, work_hours=work_hours)
+    images = Gallery.query.all()
+    return render_template("admin_gallery.html", images=images)
+
+# --- Admin dashboard ---
+@app.route("/dashboard")
+def dashboard():
+    if not session.get("admin"):
+        return redirect("/LeHa")
+
+    appointments = Appointment.query.order_by(Appointment.date, Appointment.time).all()
+    services = Service.query.all()
+    gallery = Gallery.query.all()
+    work_hours = WorkHours.query.first() or WorkHours()
+
+    return render_template("admin_dashboard.html",
+                           appointments=appointments,
+                           services=services,
+                           gallery=gallery,
+                           work_hours=work_hours)
 
 # --- Logout ---
 @app.route("/logout")
@@ -77,44 +153,31 @@ def logout():
 def book():
     try:
         data = request.json
-
-        # Get dynamic work hours
-        work = WorkHours.query.first()
-        WORK_START = work.start_hour if work else 8
-        WORK_END = work.end_hour if work else 18
+        work = WorkHours.query.first() or WorkHours()
+        start, end = work.start_hour, work.end_hour
 
         hour = int(data["time"].split(":")[0])
+        if hour < start or hour >= end:
+            return jsonify({"message": f"Outside working hours ({start}:00-{end}:00)"}), 400
 
-        # Check working hours
-        if hour < WORK_START or hour >= WORK_END:
-            return jsonify({"message": f"Outside working hours ({WORK_START}:00-{WORK_END}:00)"}), 400
-
-        # Prevent double booking
-        existing = Appointment.query.filter_by(
-            date=data["date"],
-            time=data["time"]
-        ).first()
+        existing = Appointment.query.filter_by(date=data["date"], time=data["time"]).first()
         if existing:
             return jsonify({"message": "Time already taken"}), 400
 
-        # Create pending appointment
-        new_appointment = Appointment(
+        new_appt = Appointment(
             name=data["name"],
             phone=data["phone"],
             date=data["date"],
             time=data["time"],
             approved=False
         )
-        db.session.add(new_appointment)
+        db.session.add(new_appt)
         db.session.commit()
 
-        # Optional: Send email to customer if you have email field
-        # msg = Message("Appointment Request Received", sender="your_email@gmail.com",
-        #               recipients=[data["email"]])
-        # msg.body = f"Hi {data['name']}, your appointment request on {data['date']} at {data['time']} is received. Awaiting admin approval."
-        # mail.send(msg)
-
-        return jsonify({"message": "Appointment request sent! Awaiting admin approval."}), 200
+        return jsonify({"message": "Appointment request sent! Awaiting admin approval."})
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Server error"}), 500
 
     except Exception as e:
         print("Booking error:", e)
@@ -160,7 +223,8 @@ def set_hours():
 
 @app.route("/cenik")
 def cenik():
-    return render_template("cenik.html")
+    services = Service.query.all()
+    return render_template("cenik.html", services=services)
 
 @app.route("/galerija")
 def galerija():
