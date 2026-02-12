@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h1>Booked Appointments</h1>
+
+<table>
+<tr>
+    <th>Name</th>
+    <th>Phone</th>
+    <th>Date</th>
+    <th>Time</th>
+</tr>
+
+{% for a in appointments %}
+<tr>
+    <td>{{ a.name }}</td>
+    <td>{{ a.phone }}</td>
+    <td>{{ a.date }}</td>
+    <td>{{ a.time }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>
