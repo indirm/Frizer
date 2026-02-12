@@ -56,21 +56,19 @@ class Service(db.Model):
     name = db.Column(db.String(100))
     price = db.Column(db.Float)
 
-@app.route("/admin/services", methods=["GET", "POST"])
+@app.route("/admin/services", methods=["POST"])
 def manage_services():
     if not session.get("admin"):
         return redirect("/LeHa")
     
-    if request.method == "POST":
-        name = request.form["name"]
-        price = float(request.form["price"])
-        service = Service(name=name, price=price)
-        db.session.add(service)
-        db.session.commit()
-        return redirect("/admin/services")
+    # Add new service from dashboard
+    name = request.form["name"]
+    price = float(request.form["price"])
+    service = Service(name=name, price=price)
+    db.session.add(service)
+    db.session.commit()
     
-    services = Service.query.all()
-    return render_template("admin_services.html", services=services)
+    return redirect("/dashboard")
 
 @app.route("/admin/service/delete/<int:id>")
 def delete_service(id):
@@ -81,7 +79,8 @@ def delete_service(id):
     if service:
         db.session.delete(service)
         db.session.commit()
-    return redirect("/admin/services")
+    return redirect("/dashboard")
+
 
 # --- Admin login ---
 @app.route("/LeHa", methods=["GET", "POST"])

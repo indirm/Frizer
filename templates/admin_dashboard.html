@@ -3,48 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Leon & Miha Frizerja</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
+<!-- Navbar -->
 <nav class="bg-blue-700 text-white p-4 flex justify-between items-center">
     <h1 class="font-bold text-xl">Admin Dashboard</h1>
     <a href="/logout" class="hover:underline">Logout</a>
 </nav>
 
-<div class="p-6" x-data="{ tab: 'appointments' }">
-
-    <!-- Tabs -->
-    <div class="flex gap-2 mb-6">
-        <button @click="tab='appointments'" 
-                :class="{'bg-blue-600 text-white': tab=='appointments', 'bg-gray-200': tab!='appointments'}" 
-                class="px-4 py-2 rounded">Appointments</button>
-        <button @click="tab='services'" 
-                :class="{'bg-blue-600 text-white': tab=='services', 'bg-gray-200': tab!='services'}" 
-                class="px-4 py-2 rounded">Services</button>
-        <button @click="tab='gallery'" 
-                :class="{'bg-blue-600 text-white': tab=='gallery', 'bg-gray-200': tab!='gallery'}" 
-                class="px-4 py-2 rounded">Gallery</button>
-        <button @click="tab='work_hours'" 
-                :class="{'bg-blue-600 text-white': tab=='work_hours', 'bg-gray-200': tab!='work_hours'}" 
-                class="px-4 py-2 rounded">Work Hours</button>
-    </div>
+<div class="p-6 space-y-8">
 
     <!-- Appointments -->
-    <div x-show="tab=='appointments'" class="space-y-4">
-        {% if appointments %}
+    <section>
+        <h2 class="text-2xl font-bold mb-4">Appointments</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for a in appointments %}
             <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-                <p class="font-bold">{{ a.name }}</p>
+                <p><strong>{{ a.name }}</strong></p>
                 <p>{{ a.date }} at {{ a.time }}</p>
-                <p>
-                    Status: 
-                    <span class="px-2 py-1 rounded {{ 'bg-green-200 text-green-800' if a.approved else 'bg-yellow-200 text-yellow-800' }}">
-                        {{ "Approved" if a.approved else "Pending" }}
-                    </span>
-                </p>
+                <p>Status: {{ "Approved" if a.approved else "Pending" }}</p>
                 <div class="mt-2 flex gap-2">
                     {% if not a.approved %}
                     <a href="/approve/{{ a.id }}" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Approve</a>
@@ -52,44 +31,37 @@
                     {% endif %}
                 </div>
             </div>
+            {% else %}
+            <p>No appointments yet.</p>
             {% endfor %}
         </div>
-        {% else %}
-        <p>No appointments yet.</p>
-        {% endif %}
-    </div>
+    </section>
 
     <!-- Services -->
-    <div x-show="tab=='services'" class="space-y-4">
-        <form method="POST" action="/admin/services" class="flex gap-2 mb-4">
-            <input type="text" name="name" placeholder="Service Name" class="border p-2 rounded flex-1">
-            <input type="number" step="0.01" name="price" placeholder="Price €" class="border p-2 rounded w-32">
+    <section>
+        <h2 class="text-2xl font-bold mb-4">Services</h2>
+        <form method="POST" action="/admin/services" class="mb-4 flex flex-wrap gap-2">
+            <input type="text" name="name" placeholder="Service Name" class="border p-2 rounded flex-1 min-w-[150px]">
+            <input type="number" step="0.01" name="price" placeholder="Price €" class="border p-2 rounded w-[120px]">
             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add</button>
         </form>
-
-        {% if services %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for s in services %}
             <div class="bg-white shadow p-4 rounded hover:scale-105 transition relative">
-                <form method="POST" action="/admin/service/edit/{{ s.id }}" class="space-y-2">
-                    <input type="text" name="name" value="{{ s.name }}" class="border p-1 rounded w-full">
-                    <input type="number" step="0.01" name="price" value="{{ s.price }}" class="border p-1 rounded w-full">
-                    <div class="flex justify-between mt-1">
-                        <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Save</button>
-                        <a href="/admin/service/delete/{{ s.id }}" class="text-red-500 hover:underline">Delete</a>
-                    </div>
-                </form>
+                <h3 class="font-bold">{{ s.name }}</h3>
+                <p class="text-gray-600">{{ s.price }} €</p>
+                <a href="/admin/service/delete/{{ s.id }}" class="absolute top-2 right-2 text-red-500 hover:underline">Delete</a>
             </div>
+            {% else %}
+            <p>No services yet.</p>
             {% endfor %}
         </div>
-        {% else %}
-        <p>No services yet.</p>
-        {% endif %}
-    </div>
+    </section>
 
     <!-- Gallery -->
-    <div x-show="tab=='gallery'" class="space-y-4">
-        <form method="POST" action="/admin/gallery" enctype="multipart/form-data" class="space-y-2">
+    <section>
+        <h2 class="text-2xl font-bold mb-4">Gallery</h2>
+        <form method="POST" action="/admin/gallery" enctype="multipart/form-data" class="mb-4 space-y-2">
             <input type="text" name="title" placeholder="Title" class="border p-2 rounded w-full">
             <input type="text" name="description" placeholder="Description" class="border p-2 rounded w-full">
             <div class="flex gap-2">
@@ -98,43 +70,36 @@
             </div>
             <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Entry</button>
         </form>
-
-        {% if gallery %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for g in gallery %}
-            <div class="bg-white shadow rounded overflow-hidden">
-                <div class="flex gap-2">
-                    <img src="{{ url_for('static', filename=g.before_image) }}" alt="Before" class="w-1/2 h-48 object-cover rounded">
-                    <img src="{{ url_for('static', filename=g.after_image) }}" alt="After" class="w-1/2 h-48 object-cover rounded">
-                </div>
+            <div class="bg-white shadow rounded overflow-hidden hover:shadow-lg transition">
+                <img src="{{ url_for('static', filename=g.before_image) }}" alt="Before" class="w-full h-48 object-cover">
+                <img src="{{ url_for('static', filename=g.after_image) }}" alt="After" class="w-full h-48 object-cover">
                 <div class="p-2">
                     <h3 class="font-bold">{{ g.title }}</h3>
-                    <p>{{ g.description }}</p>
+                    <p class="text-gray-600">{{ g.description }}</p>
                 </div>
             </div>
+            {% else %}
+            <p>No gallery entries yet. Upload some images!</p>
             {% endfor %}
         </div>
-        {% else %}
-        <p>No gallery entries yet.</p>
-        {% endif %}
-    </div>
+    </section>
 
     <!-- Work Hours -->
-    <div x-show="tab=='work_hours'" class="space-y-4">
-        <form method="POST" action="/set_hours" class="flex items-center gap-4">
-            <div>
-                <label class="block mb-1">Start Hour</label>
-                <input type="range" min="6" max="20" name="start" value="{{ work_hours.start_hour }}" class="w-48">
-                <span>{{ work_hours.start_hour }}:00</span>
-            </div>
-            <div>
-                <label class="block mb-1">End Hour</label>
-                <input type="range" min="6" max="22" name="end" value="{{ work_hours.end_hour }}" class="w-48">
-                <span>{{ work_hours.end_hour }}:00</span>
-            </div>
+    <section>
+        <h2 class="text-2xl font-bold mb-4">Work Hours</h2>
+        <form method="POST" action="/set_hours" class="flex flex-wrap gap-2 items-center">
+            <label class="flex items-center gap-1">
+                Start: <input type="number" name="start" value="{{ work_hours.start_hour }}" min="0" max="23" class="border p-2 rounded w-20">
+            </label>
+            <label class="flex items-center gap-1">
+                End: <input type="number" name="end" value="{{ work_hours.end_hour }}" min="0" max="23" class="border p-2 rounded w-20">
+            </label>
             <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Save</button>
         </form>
-    </div>
+        <p class="text-gray-500 mt-1">Set the working hours for booking appointments.</p>
+    </section>
 
 </div>
 
