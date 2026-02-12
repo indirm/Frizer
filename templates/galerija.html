@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Galerija{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6 text-center">Galerija naših strank</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <!-- Add your images in static/images/ and reference here -->
+    <img src="{{ url_for('static', filename='images/client1.jpg') }}" class="rounded shadow hover:scale-105 transition">
+    <img src="{{ url_for('static', filename='images/client2.jpg') }}" class="rounded shadow hover:scale-105 transition">
+    <img src="{{ url_for('static', filename='images/client3.jpg') }}" class="rounded shadow hover:scale-105 transition">
+</div>
+{% endblock %}

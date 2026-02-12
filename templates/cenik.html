@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Cenik{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6 text-center">Naš cenik</h1>
+<table class="table-auto w-full max-w-xl mx-auto bg-gray-100 rounded shadow-md">
+    <thead>
+        <tr class="bg-gray-900 text-white">
+            <th class="px-4 py-2">Storitev</th>
+            <th class="px-4 py-2">Cena</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="hover:bg-gray-200">
+            <td class="border px-4 py-2">Striženje moški</td>
+            <td class="border px-4 py-2">20€</td>
+        </tr>
+        <tr class="hover:bg-gray-200">
+            <td class="border px-4 py-2">Striženje ženske</td>
+            <td class="border px-4 py-2">30€</td>
+        </tr>
+        <tr class="hover:bg-gray-200">
+            <td class="border px-4 py-2">Barvanje las</td>
+            <td class="border px-4 py-2">40€</td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

@@ -1,27 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Frizer{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Roboto', sans-serif; background: #fefefe; }
+        nav a { transition: all 0.3s ease; }
+        nav a:hover { color: #f59e0b; transform: scale(1.05); }
+        .fade-in { animation: fadeIn 1s ease forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
+    </style>
 </head>
-<body>
-    <header>
-        <nav>
-            <a href="{{ url_for('index') }}">Home</a>
+<body class="text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 text-white p-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="text-xl font-bold">Frizerski Studio</div>
+        <div class="space-x-6">
+            <a href="{{ url_for('index') }}">Domov</a>
             <a href="{{ url_for('cenik') }}">Cenik</a>
             <a href="{{ url_for('galerija') }}">Galerija</a>
-            <a href="{{ url_for('o_nama') }}">O Nama</a>
-        </nav>
-    </header>
+            <a href="{{ url_for('o_nama') }}">O nas</a>
+            <a href="/LeHa" class="bg-yellow-500 text-gray-900 px-3 py-1 rounded hover:bg-yellow-400">Admin</a>
+        </div>
+    </nav>
 
-    <main>
+    <!-- Main content -->
+    <main class="container mx-auto p-6 fade-in">
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        <p>&copy; 2026 Frizer Leon & Miha</p>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white p-4 text-center mt-12">
+        &copy; 2026 Frizerski Studio. Vse pravice pridržane.
     </footer>
+
 </body>
 </html>

@@ -1,16 +1,47 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Domov{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1>Dobrodošli v Frizerskem Studiu Leon & Miha!</h1>
-    <p>Rezervirajte svoj termin danes!</p>
-    <a href="#booking" class="btn">Rezerviraj</a>
+<section class="text-center">
+    <h1 class="text-4xl font-bold mb-4">Dobrodošli v našem Frizerskem Studiu!</h1>
+    <p class="mb-6 text-lg">Profesionalne storitve, prijazno osebje in vrhunski rezultati.</p>
+    <a href="#book" class="bg-yellow-500 text-gray-900 px-6 py-3 rounded hover:bg-yellow-400 transition">Rezervirajte termin</a>
 </section>
 
-<section id="features">
-    <div class="feature">Profesionalni frizerji</div>
-    <div class="feature">Udobno okolje</div>
-    <div class="feature">Najboljši stili</div>
+<section id="book" class="mt-12 bg-gray-100 p-6 rounded shadow-md max-w-xl mx-auto">
+    <h2 class="text-2xl font-bold mb-4">Rezervacija termina</h2>
+    <form id="bookingForm" class="space-y-4">
+        <input type="text" id="name" placeholder="Vaše ime" class="w-full p-2 border rounded" required>
+        <input type="text" id="phone" placeholder="Telefon" class="w-full p-2 border rounded" required>
+        <input type="date" id="date" class="w-full p-2 border rounded" required>
+        <input type="time" id="time" class="w-full p-2 border rounded" required>
+        <button type="button" onclick="book()" class="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800">Rezerviraj</button>
+        <p id="message" class="text-green-600 font-semibold mt-2"></p>
+    </form>
 </section>
+
+<script>
+function book() {
+    fetch("/book", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            name: document.getElementById("name").value,
+            phone: document.getElementById("phone").value,
+            date: document.getElementById("date").value,
+            time: document.getElementById("time").value
+        })
+    })
+    .then(res => res.json().then(data => ({status: res.status, body: data})))
+    .then(obj => {
+        document.getElementById("message").innerText = obj.body.message;
+        document.getElementById("message").className = obj.status === 200 ? "text-green-600" : "text-red-600";
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById("message").innerText = "Napaka, poskusite znova.";
+        document.getElementById("message").className = "text-red-600";
+    });
+}
+</script>
 {% endblock %}
