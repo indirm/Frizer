@@ -2,22 +2,22 @@
 {% block title %}Galerija{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-8 text-center">Galerija naših strank</h1>
+<h1 class="text-4xl sm:text-5xl font-extrabold mb-12 text-center text-gray-900">Galerija naših strank</h1>
 
-<div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
     {% for g in gallery %}
-    <div class="bg-white shadow rounded overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-transform transform hover:-translate-y-1 overflow-hidden">
         <div class="flex flex-col sm:flex-row gap-2">
-            <img src="{{ url_for('static', filename=g.before_image) }}" alt="Before" class="w-full sm:w-1/2 h-48 object-cover rounded-t sm:rounded-l sm:rounded-t-none">
-            <img src="{{ url_for('static', filename=g.after_image) }}" alt="After" class="w-full sm:w-1/2 h-48 object-cover rounded-b sm:rounded-r sm:rounded-b-none">
+            <img src="{{ url_for('static', filename=g.before_image) }}" alt="Before" class="w-full sm:w-1/2 h-56 object-cover rounded-t-2xl sm:rounded-l-2xl sm:rounded-t-none">
+            <img src="{{ url_for('static', filename=g.after_image) }}" alt="After" class="w-full sm:w-1/2 h-56 object-cover rounded-b-2xl sm:rounded-r-2xl sm:rounded-b-none">
         </div>
-        <div class="p-4">
-            <h3 class="font-bold text-lg">{{ g.title }}</h3>
-            <p class="text-gray-600 mt-1">{{ g.description }}</p>
+        <div class="p-6">
+            <h3 class="font-bold text-2xl text-gray-900">{{ g.title }}</h3>
+            <p class="text-gray-700 mt-2">{{ g.description }}</p>
         </div>
     </div>
     {% else %}
-    <p class="col-span-full text-center text-gray-500">Še ni slik v galeriji.</p>
+    <p class="col-span-full text-center text-gray-500 text-lg mt-6">Še ni slik v galeriji.</p>
     {% endfor %}
 </div>
 {% endblock %}

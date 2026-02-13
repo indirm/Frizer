@@ -1,13 +1,8 @@
-from flask import session, redirect, url_for
-from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-#from flask_mail import Mail, Message
-import os
 from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
+
 
 app = Flask(__name__)
 
@@ -56,19 +51,22 @@ class Service(db.Model):
     name = db.Column(db.String(100))
     price = db.Column(db.Float)
 
-@app.route("/admin/services", methods=["POST"])
+@app.route("/admin/services", methods=["GET", "POST"])
 def manage_services():
     if not session.get("admin"):
         return redirect("/LeHa")
     
-    # Add new service from dashboard
-    name = request.form["name"]
-    price = float(request.form["price"])
-    service = Service(name=name, price=price)
-    db.session.add(service)
-    db.session.commit()
+    if request.method == "POST":
+        name = request.form["name"]
+        price = float(request.form["price"])
+        service = Service(name=name, price=price)
+        db.session.add(service)
+        db.session.commit()
+        return redirect("/admin/services")
     
-    return redirect("/dashboard")
+    services = Service.query.all()
+    return render_template("admin_services.html", services=services)
+
 
 @app.route("/admin/service/delete/<int:id>")
 def delete_service(id):
@@ -101,28 +99,46 @@ def index():
 def manage_gallery():
     if not session.get("admin"):
         return redirect("/LeHa")
-    
+
     if request.method == "POST":
-        # handle file upload
         title = request.form["title"]
         description = request.form["description"]
         before = request.files["before"]
         after = request.files["after"]
-        
-        # save files to static/images/
+
         before_path = "images/" + before.filename
         after_path = "images/" + after.filename
+
         before.save(os.path.join("static", before_path))
         after.save(os.path.join("static", after_path))
-        
-        entry = Gallery(title=title, description=description,
-                        before_image=before_path, after_image=after_path)
+
+        entry = Gallery(
+            title=title,
+            description=description,
+            before_image=before_path,
+            after_image=after_path
+        )
+
         db.session.add(entry)
         db.session.commit()
+
         return redirect("/admin/gallery")
-    
+
     images = Gallery.query.all()
     return render_template("admin_gallery.html", images=images)
+
+@app.route("/admin/gallery/delete/<int:id>")
+def delete_gallery(id):
+    if not session.get("admin"):
+        return redirect("/LeHa")
+
+    image = Gallery.query.get(id)
+    if image:
+        db.session.delete(image)
+        db.session.commit()
+
+    return redirect("/admin/gallery")
+
 
 # --- Admin dashboard ---
 @app.route("/dashboard")
@@ -180,10 +196,6 @@ def book():
     except Exception as e:
         print(e)
         return jsonify({"message": "Server error"}), 500
-
-    except Exception as e:
-        print("Booking error:", e)
-        return jsonify({"message": "Server error, try again."}), 500
 
 # --- Approve / Reject ---
 @app.route("/approve/<int:id>")

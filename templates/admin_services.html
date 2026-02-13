@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Uredi Storitve{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <h1 class="text-3xl font-bold mb-8 text-center">Uredi Storitve</h1>
+
+    <!-- Add new service -->
+    <form action="/admin/services" method="POST" class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-lg space-y-4">
+        <h2 class="text-2xl font-bold mb-4">Dodaj novo storitev</h2>
+        <input type="text" name="name" placeholder="Ime storitve"
+               class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+        <input type="number" step="0.01" name="price" placeholder="Cena (€)"
+               class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+        <button type="submit"
+                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition w-full sm:w-auto">
+            Dodaj
+        </button>
+    </form>
+
+    <!-- Existing services -->
+    <div class="mt-10 max-w-md mx-auto">
+        <h2 class="text-2xl font-bold mb-6">Obstoječe storitve</h2>
+        <ul class="space-y-3">
+            {% for s in services %}
+            <li class="flex justify-between items-center bg-white p-4 rounded-xl shadow hover:shadow-2xl transition">
+                <span class="font-semibold">{{ s.name }} - {{ s.price }} €</span>
+                <a href="/admin/service/delete/{{ s.id }}"
+                   class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition">
+                   Izbriši
+                </a>
+            </li>
+            {% else %}
+            <p class="text-center text-gray-500">Še ni storitev</p>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+{% endblock %}

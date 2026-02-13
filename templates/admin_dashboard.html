@@ -2,82 +2,69 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-6 text-center">Admin Dashboard</h1>
+<h1 class="text-4xl font-extrabold mb-10 text-center text-gray-900">Admin Dashboard</h1>
 
-<!-- Quick actions -->
-<div class="flex flex-col md:flex-row gap-6 mb-8 flex-wrap">
-    <a href="/admin/gallery" class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">Uredi galerijo</a>
-    <a href="/admin/services" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Uredi storitve</a>
-    <a href="/logout" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Odjava</a>
+<!-- Quick Actions -->
+<div class="flex flex-col md:flex-row gap-6 mb-12 justify-center flex-wrap">
+    <a href="/admin/gallery" class="bg-blue-700 text-white px-6 py-3 rounded-2xl hover:bg-blue-800 shadow-lg transition">Uredi galerijo</a>
+    <a href="/admin/services" class="bg-green-600 text-white px-6 py-3 rounded-2xl hover:bg-green-700 shadow-lg transition">Uredi storitve</a>
+    <a href="/logout" class="bg-red-600 text-white px-6 py-3 rounded-2xl hover:bg-red-700 shadow-lg transition">Odjava</a>
 </div>
 
 <!-- Appointments -->
-<div class="overflow-x-auto mb-8">
-    <h2 class="text-2xl font-bold mb-4">Rezervacije</h2>
-    <table class="w-full table-auto border-collapse border border-gray-300">
-        <thead>
-            <tr class="bg-gray-200">
-                <th class="border px-2 py-1">Ime</th>
-                <th class="border px-2 py-1">Telefon</th>
-                <th class="border px-2 py-1">Datum</th>
-                <th class="border px-2 py-1">Ura</th>
-                <th class="border px-2 py-1">Status</th>
-                <th class="border px-2 py-1">Akcije</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for a in appointments %}
-            <tr class="text-center">
-                <td class="border px-2 py-1">{{ a.name }}</td>
-                <td class="border px-2 py-1">{{ a.phone }}</td>
-                <td class="border px-2 py-1">{{ a.date }}</td>
-                <td class="border px-2 py-1">{{ a.time }}</td>
-                <td class="border px-2 py-1">
-                    {% if a.approved %}
-                    <span class="text-green-600 font-bold">Odobreno</span>
-                    {% else %}
-                    <span class="text-red-600 font-bold">Čaka</span>
-                    {% endif %}
-                </td>
-                <td class="border px-2 py-1 space-x-1">
-                    <a href="/approve/{{ a.id }}" class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition">Odobri</a>
-                    <a href="/reject/{{ a.id }}" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition">Zavrni</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="6" class="border px-2 py-4 text-center text-gray-500">Ni rezervacij</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<!-- Services -->
-<div class="mb-8">
-    <h2 class="text-2xl font-bold mb-4">Storitve</h2>
-    <div class="flex flex-col sm:flex-row gap-4 flex-wrap">
-        {% for s in services %}
-        <div class="bg-white p-4 rounded shadow flex justify-between w-full sm:w-auto">
-            <span>{{ s.name }} - {{ s.price }} €</span>
-            <a href="/admin/service/delete/{{ s.id }}" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition">Izbriši</a>
-        </div>
-        {% else %}
-        <p class="text-gray-500">Še ni storitev</p>
-        {% endfor %}
+<div class="mb-12">
+    <h2 class="text-3xl font-bold mb-6 text-gray-900">Rezervacije</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full table-auto border-collapse border border-gray-300 rounded-xl overflow-hidden">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border px-4 py-2">Ime</th>
+                    <th class="border px-4 py-2">Telefon</th>
+                    <th class="border px-4 py-2">Datum</th>
+                    <th class="border px-4 py-2">Ura</th>
+                    <th class="border px-4 py-2">Status</th>
+                    <th class="border px-4 py-2">Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in appointments %}
+                <tr class="text-center hover:bg-gray-50 transition">
+                    <td class="border px-4 py-2">{{ a.name }}</td>
+                    <td class="border px-4 py-2">{{ a.phone }}</td>
+                    <td class="border px-4 py-2">{{ a.date }}</td>
+                    <td class="border px-4 py-2">{{ a.time }}</td>
+                    <td class="border px-4 py-2">
+                        {% if a.approved %}
+                        <span class="text-green-600 font-bold">Odobreno</span>
+                        {% else %}
+                        <span class="text-red-600 font-bold">Čaka</span>
+                        {% endif %}
+                    </td>
+                    <td class="border px-4 py-2 space-x-2">
+                        <a href="/approve/{{ a.id }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">Odobri</a>
+                        <a href="/reject/{{ a.id }}" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">Zavrni</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="border px-4 py-6 text-center text-gray-500">Ni rezervacij</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Work hours -->
-<div class="mb-8 max-w-md">
-    <h2 class="text-2xl font-bold mb-4">Delovni čas</h2>
-    <form action="/set_hours" method="POST" class="flex gap-2 flex-wrap">
+<!-- Work Hours -->
+<div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 mb-12">
+    <h2 class="text-3xl font-bold mb-6 text-gray-900 text-center">Delovni čas</h2>
+    <form action="/set_hours" method="POST" class="flex gap-4 justify-center flex-wrap">
         <input type="number" name="start" value="{{ work_hours.start_hour }}" min="0" max="23"
-               class="border rounded p-2 w-20">
-        <span class="self-center">:</span>
+               class="border rounded-xl p-2 w-24 text-center font-semibold">
+        <span class="self-center text-xl font-bold">:</span>
         <input type="number" name="end" value="{{ work_hours.end_hour }}" min="0" max="23"
-               class="border rounded p-2 w-20">
-        <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">Shrani</button>
+               class="border rounded-xl p-2 w-24 text-center font-semibold">
+        <button type="submit" class="bg-blue-700 text-white px-6 py-2 rounded-2xl hover:bg-blue-800 shadow transition">Shrani</button>
     </form>
 </div>
 
